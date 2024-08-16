@@ -1,0 +1,21 @@
+I am [input] years old
+I live in [state]
+How much do you have?
+- I have [input] in my Roth IRAs and 401(k)s
+- I have [input] in my Traditional IRAs and 401(k)s
+- I have [input] in my standard brokerage accounts
+How much do you make?
+- I make [input] per (year/monthy/two weeks/week/hour) before tax
+- I contribute [input] (% OR per (year/month/two weeks/week/hour)) to a Roth IRA or 401(k)
+- I contribute [input] (% OR per (year/month/two weeks/week/hour)) to a Traditional IRA or 401(k)
+- I contribute [input] (% OR per (year/month/two weeks/week/hour)) to a standard brokerage account
+You can retire at [retirement age]
+- You'll have [x] when you retire
+- You'll have [x]/year to spend after taxes ([x] before taxes)
+
+PARAMETERS/ASSUMPTIONS
+- 3% inflation
+- federal/state income tax
+- 10% investment account growth
+- 4% safe withdrawal rate
+- average spending = income - retirement savings
