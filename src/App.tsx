@@ -11,46 +11,70 @@ import { theme } from "./theme";
 import { useStateData } from "./useStateData";
 import { useState } from "react";
 import { CurrencyInput } from "./CurrencyInput";
-
-const stockGrowth = 0.1;
-const safeWithdrawalRate = 0.04;
-const inflationRate = 0.0328;
-
-const getBaseLog = (val: number, base: number) => {
-  return Math.log(val) / Math.log(base);
-};
+import { getYearsToRetire } from "./calculate_age";
 
 export const App = () => {
   const allStateTaxBrackets = useStateData();
   const [age, setAge] = useState(40);
   const [state, setState] = useState("New York");
   const [rothAmount, setRothAmount] = useState(25000);
-  const [traditionalAmount, setTraditionalAmount] = useState(50000);
-  const [brokerageAmount, setBrokerageAmount] = useState(5000);
-  const [spendingAmount, setSpendingAmount] = useState(40000);
-
-  // total at retirement age = currentTotal * 1.1^(retirement age - age)
-  // spendingAmount * 1.03^(retirement age - age) / (1 - withdrawalTax) = total at retirement age * safeWithdrawalRate
-  // spendingAmount * 1.03^(retirement age - age) = currentTotal * 1.1^(retirement age - age) * safeWithdrawalRate
-  // 1.1^(retirement age - age) / 1.03^(retirement age - age) = spendingAmount / (safeWithdrawalRate * currentTotal)
-  // (1.1/1.03)^(retirement age - age) = spendingAmount / (safeWithdrawalRate * currentTotal)
-
-  // total A at retirement age = currentTotalA * 1.1^(retirement age - age)
-  // total B at retirement age = currentTotalB * 1.1^(retirement age - age)
-  // spendingAmount * 1.03^(retirement age - age) / (1 - withdrawalTaxA) = total A at retirement age * safeWithdrawalRate
-  // spendingAmount * 1.03^(retirement age - age) / (1 - withdrawalTaxB) = total B at retirement age * safeWithdrawalRate
-  // totalSpendingAmount = [total A at retirement age * (1 - withdrawalTaxA) + total B at retirement age * (1 - withdrawalTaxB)] * safeWithdrawalRate / 1.03^(retirement age - age)
-  // totalSpendingAmount = [currentTotalA * (1 - withdrawalTaxA) + currentTotalB * (1 - withdrawalTaxB)] * 1.1^(retirement age - age) * safeWithdrawalRate / 1.03^(retirement age - age)
+  const [traditionalAmount, setTraditionalAmount] = useState(0);
+  const [brokerageAmount, setBrokerageAmount] = useState(0);
+  const [spendingAmount, setSpendingAmount] = useState(80000);
+  const [rothContributions, setRothContributions] = useState(0);
+  const [traditionalContributions, setTraditionalContributions] = useState(0);
+  const [brokerageContributions, setBrokerageContributions] = useState(0);
 
   const retirementAge =
     age +
-    getBaseLog(
-      spendingAmount /
-        (safeWithdrawalRate *
-          (brokerageAmount * (1 - 0.15) +
-            traditionalAmount * (1 - 0.25) +
-            rothAmount)),
-      (1 + stockGrowth) / (1 + inflationRate)
+    getYearsToRetire(
+      [
+        {
+          taxRate: 0,
+          startingBalance: rothAmount,
+          yearlyContribution: rothContributions,
+          yearlyReturn: 0.1,
+        },
+        {
+          taxRate: 0.25,
+          startingBalance: traditionalAmount,
+          yearlyContribution: traditionalContributions,
+          yearlyReturn: 0.1,
+        },
+        {
+          taxRate: 0.15,
+          startingBalance: brokerageAmount,
+          yearlyContribution: brokerageContributions,
+          yearlyReturn: 0.1,
+        },
+      ],
+      spendingAmount
+    );
+
+  const costFIretirementAge =
+    age +
+    getYearsToRetire(
+      [
+        {
+          taxRate: 0,
+          startingBalance: rothAmount,
+          yearlyContribution: 0,
+          yearlyReturn: 0.1,
+        },
+        {
+          taxRate: 0.25,
+          startingBalance: traditionalAmount,
+          yearlyContribution: 0,
+          yearlyReturn: 0.1,
+        },
+        {
+          taxRate: 0.15,
+          startingBalance: brokerageAmount,
+          yearlyContribution: 0,
+          yearlyReturn: 0.1,
+        },
+      ],
+      spendingAmount
     );
 
   return (
@@ -97,7 +121,7 @@ export const App = () => {
             value={traditionalAmount}
             setValue={setTraditionalAmount}
           />
-          <Text>in my Traditional IRAs and 401(k)s</Text>
+          <Text>in my traditional IRAs and 401(k)s</Text>
         </HStack>
         <HStack>
           <Text>I have</Text>
@@ -108,13 +132,40 @@ export const App = () => {
           <Text>in my standard brokerage accounts</Text>
         </HStack>
         <HStack>
+          <Text>I contribute</Text>
+          <CurrencyInput
+            value={rothContributions}
+            setValue={setRothContributions}
+          />
+          <Text>yearly to my Roth IRAs and 401(k)s</Text>
+        </HStack>
+        <HStack>
+          <Text>I contribute</Text>
+          <CurrencyInput
+            value={traditionalContributions}
+            setValue={setTraditionalContributions}
+          />
+          <Text>yearly to traditional IRAs and 401(k)s</Text>
+        </HStack>
+        <HStack>
+          <Text>I contribute</Text>
+          <CurrencyInput
+            value={brokerageContributions}
+            setValue={setBrokerageContributions}
+          />
+          <Text>yearly to my standard brokerage accounts</Text>
+        </HStack>
+        <HStack>
           <Text>I spend</Text>
           <CurrencyInput value={spendingAmount} setValue={setSpendingAmount} />
           <Text>every year</Text>
         </HStack>
         <Text fontSize="xx-large">
-          You can retire at {Math.round(retirementAge)} with your current
-          savings
+          At this rate, you can retire at {Math.round(retirementAge)}.
+        </Text>
+        <Text fontSize="x-large">
+          You can retire at {Math.round(costFIretirementAge)} with just your
+          current savings.
         </Text>
       </VStack>
     </ChakraProvider>

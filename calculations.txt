@@ -1,0 +1,23 @@
+
+
+NOTE: This is a scratch notes doc. These are not the actual formulas.
+
+
+
+total at retirement age = currentTotal * 1.1^(retirement age - age)
+spendingAmount * 1.03^(retirement age - age) / (1 - withdrawalTax) = total at retirement age * safeWithdrawalRate
+spendingAmount * 1.03^(retirement age - age) = currentTotal * 1.1^(retirement age - age) * safeWithdrawalRate
+1.1^(retirement age - age) / 1.03^(retirement age - age) = spendingAmount / (safeWithdrawalRate * currentTotal)
+(1.1/1.03)^(retirement age - age) = spendingAmount / (safeWithdrawalRate * currentTotal)
+
+total A at retirement age = currentTotalA * 1.1^(retirement age - age)
+total B at retirement age = currentTotalB * 1.1^(retirement age - age)
+spendingAmount * 1.03^(retirement age - age) / (1 - withdrawalTaxA) = total A at retirement age * safeWithdrawalRate
+spendingAmount * 1.03^(retirement age - age) / (1 - withdrawalTaxB) = total B at retirement age * safeWithdrawalRate
+totalSpendingAmount = [total A at retirement age * (1 - withdrawalTaxA) + total B at retirement age * (1 - withdrawalTaxB)] * safeWithdrawalRate / 1.03^(retirement age - age)
+totalSpendingAmount = [currentTotalA * (1 - withdrawalTaxA) + currentTotalB * (1 - withdrawalTaxB)] * 1.1^(retirement age - age) * safeWithdrawalRate / 1.03^(retirement age - age)
+
+total A at retirement age = currentTotalA * 1.1^(retirement age - age)
+// get contributionsA every two weeks
++ contributionsA * 1.1^(retirement age - age) + contributionsA * 1.1^(retirement age - age - 1/26) + contributionsA * 1.1^(retirement age - age - 2/26) + ...
+SUM[years invested, starts at retirement age - age, ends at 0, increases by 1/26] contributionsA * 1.1^years invested

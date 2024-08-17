@@ -22,7 +22,7 @@ def f_partial(years, account: Account):
 
 def f(years, accounts: list[Account], yearlySpending, inflationRate, safeWithdrawalRate):
     lhs = sum(f_partial(years, account) for account in accounts)
-    rhs = (yearlySpending * (inflationRate ** years)) / safeWithdrawalRate
+    rhs = (yearlySpending * ((1 + inflationRate) ** years)) / safeWithdrawalRate
     return lhs - rhs
 
 def f_prime_partial(years, account: Account):
@@ -30,7 +30,7 @@ def f_prime_partial(years, account: Account):
 
 def f_prime(years, accounts: list[Account], yearlySpending, inflationRate, safeWithdrawalRate):
     lhs_prime = sum(f_prime_partial(years, account) for account in accounts)
-    rhs_prime = (yearlySpending * (inflationRate ** years) * math.log(inflationRate)) / safeWithdrawalRate
+    rhs_prime = (yearlySpending * ((1 +inflationRate) ** years) * math.log(1 + inflationRate)) / safeWithdrawalRate
     return lhs_prime - rhs_prime
 
 def newtons_method(accounts: list[Account], yearlySpending, inflationRate, safeWithdrawalRate, yearsEstimate, tolerance=1e-6, max_iterations=100):
@@ -59,10 +59,10 @@ def newtons_method_with_several_guesses(accounts: list[Account], yearlySpending,
 
 # Example usage:
 account1 = Account()
-account1.taxRate = 0.2
-account1.startingBalance = 0
-account1.yearlyContribution = .01
-account1.yearlyReturn = 0.04
+account1.taxRate = 0.25
+account1.startingBalance = 50000
+account1.yearlyContribution = 5000
+account1.yearlyReturn = 0.1
 
-t_solution = newtons_method_with_several_guesses([account1], 70000, 1.03, 0.04)
+t_solution = newtons_method_with_several_guesses([account1], 40000, 0.0328, 0.04)
 print(f"Estimated t: {t_solution}")
