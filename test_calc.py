@@ -1,27 +1,43 @@
+'''
+PROMPT:
+
+"In the equation 
+(1-x_1)(P_1(1+r_1)^t+C_1((1+r_1)^t-1)/r_1) + (1-x_2)(P_2(1+r_2)^t+C_2((1+r_2)^t-1)/r_2) + (1-x_3)(P_3(1+r_3)^t+C_3((1+r_3)^t-1)/r_3) = cj^t/s
+how would i solve for t using newton's method"
+
+then I did some tidying
+'''
+
 import math
 
-def f(t, x1, x2, x3, P1, P2, P3, C1, C2, C3, r1, r2, r3, c, j, s):
-    lhs = (1 - x1) * (P1 * (1 + r1) ** t + (C1 * ((1 + r1) ** t - 1) / r1)) + \
-           (1 - x2) * (P2 * (1 + r2) ** t + (C2 * ((1 + r2) ** t - 1) / r2)) + \
-           (1 - x3) * (P3 * (1 + r3) ** t + (C3 * ((1 + r3) ** t - 1) / r3))
-    rhs = (c * (j ** t)) / s
+class Account:
+    taxRate: float
+    startingBalance: float
+    yearlyContribution: float
+    yearlyReturn: float
+
+
+def f_partial(years, account: Account):
+    return (1 - account.taxRate) * (account.startingBalance * (1 + account.yearlyReturn) ** years + (account.yearlyContribution * ((1 + account.yearlyReturn) ** years - 1) / account.yearlyReturn))
+
+def f(years, accounts: list[Account], yearlySpending, inflationRate, safeWithdrawalRate):
+    lhs = sum(f_partial(years, account) for account in accounts)
+    rhs = (yearlySpending * (inflationRate ** years)) / safeWithdrawalRate
     return lhs - rhs
 
-def f_prime(t, x1, x2, x3, P1, P2, P3, C1, C2, C3, r1, r2, r3, c, j, s):
-    lhs_prime = (1 - x1) * (P1 * math.log(1 + r1) * (1 + r1) ** t + \
-                            C1 * math.log(1 + r1) * (1 + r1) ** t / r1) + \
-                (1 - x2) * (P2 * math.log(1 + r2) * (1 + r2) ** t + \
-                            C2 * math.log(1 + r2) * (1 + r2) ** t / r2) + \
-                (1 - x3) * (P3 * math.log(1 + r3) * (1 + r3) ** t + \
-                            C3 * math.log(1 + r3) * (1 + r3) ** t / r3) - \
-                (c * (j ** t) * math.log(j)) / s
-    return lhs_prime
+def f_prime_partial(years, account: Account):
+    return (1 - account.taxRate) * (account.startingBalance * math.log(1 + account.yearlyReturn) * (1 + account.yearlyReturn) ** years + account.yearlyContribution * math.log(1 + account.yearlyReturn) * (1 + account.yearlyReturn) ** years / account.yearlyReturn)
 
-def newtons_method(x1, x2, x3, P1, P2, P3, C1, C2, C3, r1, r2, r3, c, j, s, t0, tolerance=1e-6, max_iterations=100):
-    t = t0
+def f_prime(years, accounts: list[Account], yearlySpending, inflationRate, safeWithdrawalRate):
+    lhs_prime = sum(f_prime_partial(years, account) for account in accounts)
+    rhs_prime = (yearlySpending * (inflationRate ** years) * math.log(inflationRate)) / safeWithdrawalRate
+    return lhs_prime - rhs_prime
+
+def newtons_method(accounts: list[Account], yearlySpending, inflationRate, safeWithdrawalRate, yearsEstimate, tolerance=1e-6, max_iterations=100):
+    t = yearsEstimate
     for _ in range(max_iterations):
-        ft = f(t, x1, x2, x3, P1, P2, P3, C1, C2, C3, r1, r2, r3, c, j, s)
-        f_prime_t = f_prime(t, x1, x2, x3, P1, P2, P3, C1, C2, C3, r1, r2, r3, c, j, s)
+        ft = f(t, accounts, yearlySpending, inflationRate, safeWithdrawalRate)
+        f_prime_t = f_prime(t, accounts, yearlySpending, inflationRate, safeWithdrawalRate)
         if abs(f_prime_t) < 1e-10:  # avoid division by zero
             print(ft, f_prime_t)
             raise ValueError("Derivative is too small")
@@ -31,13 +47,22 @@ def newtons_method(x1, x2, x3, P1, P2, P3, C1, C2, C3, r1, r2, r3, c, j, s, t0, 
         t = t_next
     raise ValueError("Newton's method did not converge")
 
-# Example usage:
-x1, x2, x3 = 0.1, 0.2, 0.2
-P1, P2, P3 = 20000, 20000, 20000
-C1, C2, C3 = 20000, 5000, 5000
-r1, r2, r3 = 0.1, 0.1, 0.1
-c, j, s = 70000, 1.03, 0.04
-t0 = 20
+def newtons_method_with_several_guesses(accounts: list[Account], yearlySpending, inflationRate, safeWithdrawalRate):
+    t0 = 1
+    while t0 < 100000:
+        t0 += 5
+        try:
+            return newtons_method(accounts, yearlySpending, inflationRate, safeWithdrawalRate, t0)
+        except (ValueError, ZeroDivisionError):
+            pass
+    raise ValueError("Could not get result")
 
-t_solution = newtons_method(x1, x2, x3, P1, P2, P3, C1, C2, C3, r1, r2, r3, c, j, s, t0)
+# Example usage:
+account1 = Account()
+account1.taxRate = 0.2
+account1.startingBalance = 0
+account1.yearlyContribution = .01
+account1.yearlyReturn = 0.04
+
+t_solution = newtons_method_with_several_guesses([account1], 70000, 1.03, 0.04)
 print(f"Estimated t: {t_solution}")
