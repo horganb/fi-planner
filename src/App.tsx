@@ -138,8 +138,8 @@ export const App = () => {
             <Text>yearly.</Text>
           </HStack>
         ))}
-        {retirementAge &&
-          (retirementAge <= age ? (
+        {retirementAge ? (
+          retirementAge <= age ? (
             <>
               <Text fontSize="xx-large">You can retire now.</Text>
               <Text fontSize="x-large">
@@ -174,7 +174,10 @@ export const App = () => {
                 </Text>
               )}
             </>
-          ))}
+          )
+        ) : (
+          <Text fontSize="xx-large">You cannot retire :(</Text>
+        )}
       </VStack>
     </ChakraProvider>
   );
