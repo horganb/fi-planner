@@ -1,6 +1,7 @@
 {
   "name": "fi-planner",
   "version": "0.1.0",
+  "homepage": "https://horganb.github.io/fi-planner",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
