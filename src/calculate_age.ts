@@ -8,6 +8,21 @@ export type Account = {
 const INFLATION_RATE = 0.0328;
 const SAFE_WITHDRAWAL_RATE = 0.04;
 
+export const netWorthOverTimeInflationAdjusted = (
+  years: number,
+  accounts: Account[]
+) => {
+  const amountWithInflation = accounts.reduce((total, account) => {
+    const coeff = (1 + account.yearlyReturn) ** years;
+    return (
+      total +
+      (account.startingBalance * coeff +
+        (account.yearlyContribution * (coeff - 1)) / account.yearlyReturn)
+    );
+  }, 0);
+  return amountWithInflation / (1 + INFLATION_RATE) ** years;
+};
+
 export const getYearsToRetire = (
   accounts: Account[],
   yearlySpending: number

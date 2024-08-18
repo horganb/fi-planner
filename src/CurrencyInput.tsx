@@ -1,4 +1,5 @@
 import { NumberInput, NumberInputField } from "@chakra-ui/react";
+import { formatAsCurrency } from "./utils";
 
 export const CurrencyInput = ({
   value,
@@ -7,17 +8,11 @@ export const CurrencyInput = ({
   value: number;
   setValue: (val: number) => void;
 }) => {
-  const format = (val: number) =>
-    `$` +
-    val
-      .toString()
-      .split(/(?=(?:\d{3})+$)/)
-      .join(",");
   const parse = (val: string) => parseFloat(val.replace(/\$|,/g, "") || "0");
 
   return (
     <NumberInput
-      value={format(value)}
+      value={formatAsCurrency(value)}
       onChange={(v) => setValue(parse(v))}
       defaultValue={25000}
     >
