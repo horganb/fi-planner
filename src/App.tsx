@@ -96,7 +96,7 @@ export const App = () => {
           >
             <NumberInputField textAlign="center" />
           </NumberInput>
-          <Text>years old</Text>
+          <Text>years old.</Text>
         </HStack>
         {/* <HStack whiteSpace="nowrap">
           <Text>I live in </Text>
@@ -117,10 +117,10 @@ export const App = () => {
         <HStack>
           <Text>I spend</Text>
           <CurrencyInput value={spendingAmount} setValue={setSpendingAmount} />
-          <Text>every year</Text>
+          <Text>every year.</Text>
         </HStack>
         {accounts.map(({ name, startingBalance, yearlyContribution }, i) => (
-          <HStack>
+          <HStack flexWrap={"wrap"} justifyContent="center" rowGap={0}>
             <Text>I have</Text>
             <CurrencyInput
               value={startingBalance}

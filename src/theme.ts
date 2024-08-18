@@ -21,6 +21,7 @@ export const theme = extendTheme({
     Text: defineStyleConfig({
       baseStyle: {
         fontSize: "xl",
+        textAlign: "center",
       },
     }),
     NumberInput: defineMultiStyleConfig({
