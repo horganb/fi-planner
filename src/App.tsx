@@ -98,7 +98,7 @@ export const App = () => {
           </NumberInput>
           <Text>years old</Text>
         </HStack>
-        <HStack whiteSpace="nowrap">
+        {/* <HStack whiteSpace="nowrap">
           <Text>I live in </Text>
           {allStateTaxBrackets && (
             <Select
@@ -113,7 +113,7 @@ export const App = () => {
               ))}
             </Select>
           )}
-        </HStack>
+        </HStack> */}
         <HStack>
           <Text>I spend</Text>
           <CurrencyInput value={spendingAmount} setValue={setSpendingAmount} />
@@ -169,7 +169,7 @@ export const App = () => {
               </Text>
               {costFIretirementAge && (
                 <Text fontSize="x-large">
-                  You can retire at {Math.round(costFIretirementAge)} with just
+                  You can retire at {Math.floor(costFIretirementAge)} with just
                   your current savings.
                 </Text>
               )}
