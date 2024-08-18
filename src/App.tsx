@@ -9,13 +9,13 @@ import {
 } from "@chakra-ui/react";
 import { theme } from "./theme";
 import { useStateData } from "./useStateData";
-import { useState } from "react";
 import { CurrencyInput } from "./CurrencyInput";
 import {
   getYearsToRetire,
   netWorthOverTimeInflationAdjusted,
 } from "./calculate_age";
 import { formatAsCurrency } from "./utils";
+import { usePersistedState } from "./usePersistedState";
 
 const ACCOUNT_INFO = [
   {
@@ -38,19 +38,24 @@ const ACCOUNT_INFO = [
     yearlyReturn: 0.05,
     name: "savings accounts",
   },
-];
+] as const;
+
+type AccountKey = (typeof ACCOUNT_INFO)[number]["name"];
 
 export const App = () => {
   const allStateTaxBrackets = useStateData();
-  const [age, setAge] = useState(40);
-  const [state, setState] = useState("New York");
-  const [spendingAmount, setSpendingAmount] = useState(80000);
-  const [contributions, setContributions] = useState<Record<string, number>>(
-    {}
+  const [age, setAge] = usePersistedState("age", 40);
+  const [state, setState] = usePersistedState("state", "New York");
+  const [spendingAmount, setSpendingAmount] = usePersistedState(
+    "spending",
+    80000
   );
-  const [currentTotals, setCurrentTotals] = useState<Record<string, number>>(
-    {}
-  );
+  const [contributions, setContributions] = usePersistedState<
+    Partial<Record<AccountKey, number>>
+  >("contributions", { "Roth IRAs and 401(k)s": 10000 });
+  const [currentTotals, setCurrentTotals] = usePersistedState<
+    Partial<Record<AccountKey, number>>
+  >("currentTotals", { "Roth IRAs and 401(k)s": 200000 });
 
   const accounts = ACCOUNT_INFO.map((a) => ({
     ...a,
@@ -72,8 +77,8 @@ export const App = () => {
       ? age + getYearsToRetire(accounts, spendingAmount)
       : null;
 
-  const costFIretirementAge =
-    spendingAmount > 0 && amountSum > 0
+  const coastFIretirementAge =
+    spendingAmount > 0 && amountSum > 0 && contributionsSum > 0
       ? age +
         getYearsToRetire(
           accounts.map((a) => ({ ...a, yearlyContribution: 0 })),
@@ -119,8 +124,13 @@ export const App = () => {
           <CurrencyInput value={spendingAmount} setValue={setSpendingAmount} />
           <Text>every year.</Text>
         </HStack>
-        {accounts.map(({ name, startingBalance, yearlyContribution }, i) => (
-          <HStack flexWrap={"wrap"} justifyContent="center" rowGap={0}>
+        {accounts.map(({ name, startingBalance, yearlyContribution }) => (
+          <HStack
+            key={name}
+            flexWrap={"wrap"}
+            justifyContent="center"
+            rowGap={0}
+          >
             <Text>I have</Text>
             <CurrencyInput
               value={startingBalance}
@@ -167,9 +177,9 @@ export const App = () => {
                 )}{" "}
                 in today's dollars.
               </Text>
-              {costFIretirementAge && (
+              {coastFIretirementAge && (
                 <Text fontSize="x-large">
-                  You can retire at {Math.floor(costFIretirementAge)} with just
+                  You can retire at {Math.floor(coastFIretirementAge)} with just
                   your current savings.
                 </Text>
               )}

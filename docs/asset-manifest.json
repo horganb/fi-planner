@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/fi-planner/static/js/main.7de0e552.js",
+    "main.js": "/fi-planner/static/js/main.9eee7122.js",
     "index.html": "/fi-planner/index.html",
-    "main.7de0e552.js.map": "/fi-planner/static/js/main.7de0e552.js.map"
+    "main.9eee7122.js.map": "/fi-planner/static/js/main.9eee7122.js.map"
   },
   "entrypoints": [
-    "static/js/main.7de0e552.js"
+    "static/js/main.9eee7122.js"
   ]
 }

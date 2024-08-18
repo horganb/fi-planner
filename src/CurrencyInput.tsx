@@ -8,7 +8,11 @@ export const CurrencyInput = ({
   value: number;
   setValue: (val: number) => void;
 }) => {
-  const parse = (val: string) => parseFloat(val.replace(/\$|,/g, "") || "0");
+  const parse = (val: string) => {
+    const parsedStr = val.replace(/\$|,|-/g, "") || "0";
+    const beforeDecimal = parsedStr.split(".")[0];
+    return parseFloat(beforeDecimal);
+  };
 
   return (
     <NumberInput
